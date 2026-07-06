@@ -197,7 +197,7 @@ namespace PrePrintPairingLabel
                     Messages msgs;
                     Result r = _format.Print("PrePrintPairingLabel", 30000, out msgs);
 
-                    if (r == Result.Failure)
+                    if (r == Result.Failure && HasErrorMessages(msgs))
                     {
                         args.Result = new PrintJobResult(i, false, FormatMessages(msgs));
                         return;
@@ -276,6 +276,15 @@ namespace PrePrintPairingLabel
                 });
             }
             return list;
+        }
+
+        private static bool HasErrorMessages(Messages messages)
+        {
+            if (messages == null) return false;
+            foreach (Seagull.BarTender.Print.Message m in messages)
+                if (m.Severity == MessageSeverity.Error)
+                    return true;
+            return false;
         }
 
         private static string FormatMessages(Messages messages)
