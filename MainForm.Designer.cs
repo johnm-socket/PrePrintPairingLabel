@@ -8,6 +8,8 @@ namespace PrePrintPairingLabel
         private System.Windows.Forms.ComboBox cboLabelType;
         private System.Windows.Forms.Label lblQuantity;
         private System.Windows.Forms.NumericUpDown nudQuantity;
+        private System.Windows.Forms.Label lblPrinter;
+        private System.Windows.Forms.ComboBox cboPrinter;
         private System.Windows.Forms.GroupBox grpPreview;
         private System.Windows.Forms.TextBox txtPreview;
         private System.Windows.Forms.Button btnTestPrint;
@@ -29,6 +31,8 @@ namespace PrePrintPairingLabel
             this.cboLabelType = new System.Windows.Forms.ComboBox();
             this.lblQuantity = new System.Windows.Forms.Label();
             this.nudQuantity = new System.Windows.Forms.NumericUpDown();
+            this.lblPrinter = new System.Windows.Forms.Label();
+            this.cboPrinter = new System.Windows.Forms.ComboBox();
             this.grpPreview = new System.Windows.Forms.GroupBox();
             this.txtPreview = new System.Windows.Forms.TextBox();
             this.btnTestPrint = new System.Windows.Forms.Button();
@@ -78,12 +82,28 @@ namespace PrePrintPairingLabel
             this.nudQuantity.TabIndex = 3;
             this.nudQuantity.Value = new decimal(new int[] { 1, 0, 0, 0 });
 
+            // lblPrinter
+            this.lblPrinter.AutoSize = true;
+            this.lblPrinter.Location = new System.Drawing.Point(12, 94);
+            this.lblPrinter.Name = "lblPrinter";
+            this.lblPrinter.Size = new System.Drawing.Size(43, 13);
+            this.lblPrinter.TabIndex = 4;
+            this.lblPrinter.Text = "Printer:";
+
+            // cboPrinter
+            this.cboPrinter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboPrinter.FormattingEnabled = true;
+            this.cboPrinter.Location = new System.Drawing.Point(90, 90);
+            this.cboPrinter.Name = "cboPrinter";
+            this.cboPrinter.Size = new System.Drawing.Size(338, 21);
+            this.cboPrinter.TabIndex = 5;
+
             // grpPreview
             this.grpPreview.Controls.Add(this.txtPreview);
-            this.grpPreview.Location = new System.Drawing.Point(12, 92);
+            this.grpPreview.Location = new System.Drawing.Point(12, 126);
             this.grpPreview.Name = "grpPreview";
             this.grpPreview.Size = new System.Drawing.Size(416, 52);
-            this.grpPreview.TabIndex = 4;
+            this.grpPreview.TabIndex = 6;
             this.grpPreview.TabStop = false;
             this.grpPreview.Text = "Next Barcode Preview";
 
@@ -101,10 +121,10 @@ namespace PrePrintPairingLabel
 
             // btnTestPrint
             this.btnTestPrint.Enabled = false;
-            this.btnTestPrint.Location = new System.Drawing.Point(12, 160);
+            this.btnTestPrint.Location = new System.Drawing.Point(12, 194);
             this.btnTestPrint.Name = "btnTestPrint";
             this.btnTestPrint.Size = new System.Drawing.Size(135, 36);
-            this.btnTestPrint.TabIndex = 5;
+            this.btnTestPrint.TabIndex = 7;
             this.btnTestPrint.Text = "Test Print";
             this.btnTestPrint.UseVisualStyleBackColor = true;
             this.btnTestPrint.Click += new System.EventHandler(this.btnTestPrint_Click);
@@ -112,10 +132,10 @@ namespace PrePrintPairingLabel
             // btnPrint
             this.btnPrint.Enabled = false;
             this.btnPrint.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnPrint.Location = new System.Drawing.Point(293, 160);
+            this.btnPrint.Location = new System.Drawing.Point(293, 194);
             this.btnPrint.Name = "btnPrint";
             this.btnPrint.Size = new System.Drawing.Size(135, 36);
-            this.btnPrint.TabIndex = 6;
+            this.btnPrint.TabIndex = 8;
             this.btnPrint.Text = "Print Labels";
             this.btnPrint.UseVisualStyleBackColor = true;
             this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
@@ -126,7 +146,7 @@ namespace PrePrintPairingLabel
                 this.tsslEngine });
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(440, 22);
-            this.statusStrip.TabIndex = 7;
+            this.statusStrip.TabIndex = 9;
 
             // tsslStatus
             this.tsslStatus.Name = "tsslStatus";
@@ -144,11 +164,13 @@ namespace PrePrintPairingLabel
             // MainForm
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(440, 226);
+            this.ClientSize = new System.Drawing.Size(440, 260);
             this.Controls.Add(this.lblLabelType);
             this.Controls.Add(this.cboLabelType);
             this.Controls.Add(this.lblQuantity);
             this.Controls.Add(this.nudQuantity);
+            this.Controls.Add(this.lblPrinter);
+            this.Controls.Add(this.cboPrinter);
             this.Controls.Add(this.grpPreview);
             this.Controls.Add(this.btnTestPrint);
             this.Controls.Add(this.btnPrint);

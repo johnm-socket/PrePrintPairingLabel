@@ -24,6 +24,7 @@ namespace PrePrintPairingLabel
         {
             SetStatus("Starting BarTender engine...");
             _labelTypes = LoadLabelTypeConfigs();
+            PopulatePrinters();
 
             var worker = new BackgroundWorker();
             worker.DoWork += (s, args) =>
@@ -46,6 +47,19 @@ namespace PrePrintPairingLabel
                 nudQuantity.Enabled = true;
             };
             worker.RunWorkerAsync();
+        }
+
+        private void PopulatePrinters()
+        {
+            cboPrinter.Items.Clear();
+            foreach (string name in System.Drawing.Printing.PrinterSettings.InstalledPrinters)
+                cboPrinter.Items.Add(name);
+
+            var def = new System.Drawing.Printing.PrinterSettings();
+            if (cboPrinter.Items.Contains(def.PrinterName))
+                cboPrinter.SelectedItem = def.PrinterName;
+            else if (cboPrinter.Items.Count > 0)
+                cboPrinter.SelectedIndex = 0;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -155,12 +169,17 @@ namespace PrePrintPairingLabel
             SetPrintingState(true);
             SetStatus(isTest ? "Sending test label..." : $"Printing {quantity} label(s)...");
 
+            string printerName = cboPrinter.SelectedItem?.ToString() ?? string.Empty;
+
             var worker = new BackgroundWorker { WorkerReportsProgress = true };
 
             worker.DoWork += (s, args) =>
             {
                 var bg = (BackgroundWorker)s;
                 var ctx = (PrintContext)args.Argument;
+
+                if (!string.IsNullOrEmpty(ctx.PrinterName))
+                    _format.PrintSetup.PrinterName = ctx.PrinterName;
 
                 _format.PrintSetup.IdenticalCopiesOfLabel = 1;
                 if (_format.PrintSetup.SupportsSerializedLabels)
@@ -216,12 +235,13 @@ namespace PrePrintPairingLabel
                 }
             };
 
-            worker.RunWorkerAsync(new PrintContext(quantity, cfg.BarcodeField, isTest));
+            worker.RunWorkerAsync(new PrintContext(quantity, cfg.BarcodeField, isTest, printerName));
         }
 
         private void SetPrintingState(bool printing)
         {
             cboLabelType.Enabled = !printing;
+            cboPrinter.Enabled = !printing;
             nudQuantity.Enabled = !printing;
             btnTestPrint.Enabled = !printing && _format != null;
             btnPrint.Enabled = !printing && _format != null;
@@ -279,8 +299,9 @@ namespace PrePrintPairingLabel
             public int Quantity { get; }
             public string BarcodeField { get; }
             public bool IsTest { get; }
-            public PrintContext(int qty, string field, bool isTest)
-            { Quantity = qty; BarcodeField = field; IsTest = isTest; }
+            public string PrinterName { get; }
+            public PrintContext(int qty, string field, bool isTest, string printerName)
+            { Quantity = qty; BarcodeField = field; IsTest = isTest; PrinterName = printerName; }
         }
 
         private sealed class PrintJobResult
