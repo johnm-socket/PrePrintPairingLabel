@@ -149,6 +149,24 @@ namespace PrePrintPairingLabel
                 btnTestPrint.Enabled = true;
                 btnPrint.Enabled = true;
                 UpdatePreview();
+
+                var subStringNames = new System.Collections.Generic.List<string>();
+                foreach (Seagull.BarTender.Print.SubString ss in _format.SubStrings)
+                    subStringNames.Add(ss.Name);
+
+                bool fieldFound = subStringNames.Contains(cfg.BarcodeField);
+                if (!fieldFound)
+                {
+                    string available = subStringNames.Count > 0
+                        ? string.Join(", ", subStringNames)
+                        : "(none)";
+                    MessageBox.Show(this,
+                        $"Warning: barcode field \"{cfg.BarcodeField}\" not found in template.\n\n" +
+                        $"Available SubStrings: {available}\n\n" +
+                        "Update BarcodeField in app.config to match.",
+                        Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
                 SetStatus($"Ready — {cfg.Name}");
             };
             worker.RunWorkerAsync(cfg.TemplatePath);
