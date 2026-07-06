@@ -14,6 +14,7 @@ namespace PrePrintPairingLabel
         private LabelFormatDocument _format;
         private List<LabelTypeConfig> _labelTypes;
         private bool _suppressTypeChange;
+        private string _tempDataFile;
 
         public MainForm()
         {
@@ -66,6 +67,7 @@ namespace PrePrintPairingLabel
         {
             if (_format != null) { try { _format.Close(SaveOptions.DoNotSaveChanges); } catch { } }
             if (_engine != null) { try { _engine.Stop(SaveOptions.DoNotSaveChanges); } catch { } }
+            if (_tempDataFile != null) { try { System.IO.File.Delete(_tempDataFile); } catch { } }
         }
 
         private void cboLabelType_SelectedIndexChanged(object sender, EventArgs e)
@@ -150,21 +152,28 @@ namespace PrePrintPairingLabel
                 btnPrint.Enabled = true;
                 UpdatePreview();
 
-                var subStringNames = new System.Collections.Generic.List<string>();
-                foreach (Seagull.BarTender.Print.SubString ss in _format.SubStrings)
-                    subStringNames.Add(ss.Name);
+                bool hasSubStrings = _format.SubStrings.Count > 0;
+                bool hasDbConnection = _format.DatabaseConnections.Count > 0;
 
-                bool fieldFound = subStringNames.Contains(cfg.BarcodeField);
-                if (!fieldFound)
+                if (!hasSubStrings && !hasDbConnection)
                 {
-                    string available = subStringNames.Count > 0
-                        ? string.Join(", ", subStringNames)
-                        : "(none)";
                     MessageBox.Show(this,
-                        $"Warning: barcode field \"{cfg.BarcodeField}\" not found in template.\n\n" +
-                        $"Available SubStrings: {available}\n\n" +
-                        "Update BarcodeField in app.config to match.",
+                        $"Warning: '{cfg.Name}' has no variable data source.\n\n" +
+                        "The barcode is hardcoded in the template and cannot be set by this app.\n" +
+                        "Open the template in BarTender and link the barcode to a Named SubString.",
                         Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+                else if (hasSubStrings)
+                {
+                    var names = new List<string>();
+                    foreach (Seagull.BarTender.Print.SubString ss in _format.SubStrings)
+                        names.Add(ss.Name);
+                    if (!names.Contains(cfg.BarcodeField))
+                        MessageBox.Show(this,
+                            $"Warning: barcode field \"{cfg.BarcodeField}\" not found in template.\n\n" +
+                            $"Available SubStrings: {string.Join(", ", names)}\n\n" +
+                            "Update BarcodeField in app.config to match.",
+                            Text, MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 SetStatus($"Ready — {cfg.Name}");
@@ -203,14 +212,28 @@ namespace PrePrintPairingLabel
                 if (_format.PrintSetup.SupportsSerializedLabels)
                     _format.PrintSetup.NumberOfSerializedLabels = 1;
 
+                var textFileConn = _format.DatabaseConnections.Count > 0
+                    ? _format.DatabaseConnections[0] as Seagull.BarTender.Print.Database.TextFile
+                    : null;
+
                 for (int i = 0; i < ctx.Quantity; i++)
                 {
                     string barcodeData = ctx.IsTest
                         ? "#PP00000000000000000000000000000000#"
                         : "#PP" + Guid.NewGuid().ToString("N").ToUpper() + "#";
 
-                    if (!string.IsNullOrEmpty(ctx.BarcodeField) && _format.SubStrings.Count > 0)
-                        _format.SubStrings[ctx.BarcodeField].Value = barcodeData;
+                    if (_format.SubStrings.Count > 0 && !string.IsNullOrEmpty(ctx.BarcodeField))
+                    {
+                        var ss = _format.SubStrings[ctx.BarcodeField];
+                        if (ss != null) ss.Value = barcodeData;
+                    }
+                    else if (textFileConn != null)
+                    {
+                        if (_tempDataFile == null)
+                            _tempDataFile = System.IO.Path.GetTempFileName();
+                        System.IO.File.WriteAllText(_tempDataFile, barcodeData + "\r\n");
+                        textFileConn.FileName = _tempDataFile;
+                    }
 
                     Messages msgs;
                     Result r = _format.Print("PrePrintPairingLabel", 30000, out msgs);
