@@ -133,6 +133,12 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="app.ico" />
+    <Content Include="MagicDock.btw">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SMLink.btw">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <!-- Runtime-only DLLs only available in SDK sample bins -->
     <None Include="$(BarTenderSampleBinPath)Interop.LMDSKernelLib2.dll">
       <Link>Interop.LMDSKernelLib2.dll</Link>

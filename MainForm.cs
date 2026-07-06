@@ -235,15 +235,23 @@ namespace PrePrintPairingLabel
 
         private static List<LabelTypeConfig> LoadLabelTypeConfigs()
         {
+            string exeDir = System.IO.Path.GetDirectoryName(
+                System.Reflection.Assembly.GetExecutingAssembly().Location);
+
             var list = new List<LabelTypeConfig>();
             for (int i = 0; ; i++)
             {
                 string name = ConfigurationManager.AppSettings["LabelType." + i + ".Name"];
                 if (string.IsNullOrEmpty(name)) break;
+
+                string templatePath = ConfigurationManager.AppSettings["LabelType." + i + ".TemplatePath"] ?? "";
+                if (!string.IsNullOrEmpty(templatePath) && !System.IO.Path.IsPathRooted(templatePath))
+                    templatePath = System.IO.Path.Combine(exeDir, templatePath);
+
                 list.Add(new LabelTypeConfig
                 {
                     Name         = name,
-                    TemplatePath = ConfigurationManager.AppSettings["LabelType." + i + ".TemplatePath"] ?? "",
+                    TemplatePath = templatePath,
                     BarcodeField = ConfigurationManager.AppSettings["LabelType." + i + ".BarcodeField"] ?? "Barcode"
                 });
             }
