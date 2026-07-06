@@ -36,6 +36,7 @@
     <!-- Override with /p:BarTenderSDKPath=... if BarTender is installed elsewhere -->
     <BarTenderSDKPath Condition="'$(BarTenderSDKPath)' == ''">C:\Program Files\Seagull\BarTender 12.0\SDK\Assemblies\</BarTenderSDKPath>
     <BarTenderRootPath Condition="'$(BarTenderRootPath)' == ''">C:\Program Files\Seagull\BarTender 12.0\</BarTenderRootPath>
+    <BarTenderSampleBinPath Condition="'$(BarTenderSampleBinPath)' == ''">C:\Program Files\Seagull\BarTender 12.0\SDK\Print Engine API Samples\LabelPrint\bin\</BarTenderSampleBinPath>
     <ApplicationIcon>app.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
@@ -79,6 +80,38 @@
       <HintPath>$(BarTenderRootPath)Seagull.Repository.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="BtSystem.Client.Reader">
+      <HintPath>$(BarTenderRootPath)BtSystem.Client.Reader.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BtSystem.Reprint.Support">
+      <HintPath>$(BarTenderRootPath)BtSystem.Reprint.Support.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="BtSystem.UI">
+      <HintPath>$(BarTenderRootPath)BtSystem.UI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Interop.BarTender">
+      <HintPath>$(BarTenderRootPath)Interop.BarTender.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Interop.DriverAutomationLibrary">
+      <HintPath>$(BarTenderRootPath)Interop.DriverAutomationLibrary.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Maestro.Interface">
+      <HintPath>$(BarTenderRootPath)Maestro.Interface.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Maestro.Library">
+      <HintPath>$(BarTenderRootPath)Maestro.Library.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Seagull.XpoDataAccess">
+      <HintPath>$(BarTenderRootPath)Seagull.XpoDataAccess.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -100,6 +133,15 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="app.ico" />
+    <!-- Runtime-only DLLs only available in SDK sample bins -->
+    <None Include="$(BarTenderSampleBinPath)Interop.LMDSKernelLib2.dll">
+      <Link>Interop.LMDSKernelLib2.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="$(BarTenderSampleBinPath)Seagull.Text.Symbols.dll">
+      <Link>Seagull.Text.Symbols.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
